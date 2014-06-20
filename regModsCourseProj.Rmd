@@ -1,0 +1,54 @@
+How transmission affects the car's fuel consumption
+========================================================
+
+
+```{r}
+#Loading the dataset
+data(mtcars)
+#Description for the mtcars dataset
+?mtcars
+#Converting transmission values to factors
+cars<-transform(mtcars, am=factor(am))
+levels(cars$am)[1] <- "Automatic"
+levels(cars$am)[2] <- "Manual"
+#Calculating the mean of each transmission types
+mean(cars$mpg[cars$am=="Automatic"])
+mean(cars$mpg[cars$am=="Manual"])
+#Regression model for transmission type how affect the car's fuel consumption
+fit1 <- lm(mpg~am, data=mtcars)
+summary(fit1)
+
+#AIC for the best model
+fit2 <- step(lm(mpg ~ ., data=cars), direction="both", k=3, trace=0)
+summary(fit2)
+
+#Comparing models
+anova(fit1,fit2)
+
+
+```
+
+Appendix
+
+Figure 1
+```{r}
+pairs(mtcars, panel=panel.smooth, main="Cars summary",col=mtcars$am)
+
+```
+
+Figure 2
+```{r}
+plot(cars$am , cars$mpg, main="MPG vs Transmission", xlab="Transmission", ylab="MPG", )
+abline(lm(mpg ~ am, cars), col="red")
+```
+
+Figure 3
+```{r}
+layout(matrix(c(1,2,3,4),2,2))
+plot(fit2)
+```
+
+
+
+
+
