@@ -1,48 +1,75 @@
-How transmission affects the car's fuel consumption
+
+
+# How transmission affects the car's fuel consumption
 ========================================================
 
+## Executive summary
+We are interested in two question: "Is an automatic or manual transmission better for MPG?" and "Quantifying how different is the MPG between automatic and manual transmissions?" 
+The answers based on the mtcars dataset what is from 1974 Motor Trend US magazine. 
+I used some basic data wrangling and regression models to answer the questions. 
+After the data analysis I can say there is a significant relationship between the fuel consumption and the transmission type so the manual transmission is better for MPG. 
+After inspect other variables I found two cofounding variables 'weight' and 'quarter-mile time'. With these variables we can model what varable values can produce the best Mpg.
 
+
+### Loading the dataset
+See fig 1 for details of the dataset
 ```{r}
-#Loading the dataset
 data(mtcars)
-#Description for the mtcars dataset
+```
+### Description for the mtcars dataset
+```{r echo=FALSE}
 ?mtcars
-#Converting transmission values to factors
+```
+### Converting transmission values to factors
+```{r}
 cars<-transform(mtcars, am=factor(am))
 levels(cars$am)[1] <- "Automatic"
 levels(cars$am)[2] <- "Manual"
-#Calculating the mean of each transmission types
-mean(cars$mpg[cars$am=="Automatic"])
-mean(cars$mpg[cars$am=="Manual"])
-#Regression model for transmission type how affect the car's fuel consumption
+```
+### Calculating the mean of each transmission types
+```{r}
+automean<-mean(cars$mpg[cars$am=="Automatic"])
+manualmean<-mean(cars$mpg[cars$am=="Manual"])
+```
+So the mean for manual transmission is `r manualmean`mpg and `r autolmean`mpg for automatic transmission. The is a significant diff in the means. Manual transmission have a higher value so based on mean of mpg it's better.
+
+
+### Regression model for transmission type how affect the car's fuel consumption
+With the previous presumption what's based on the mean of the transmission types we can observe mpg is better with manual transmission. We can prove it with regression model too. If we looking at the coefficients It's shows us the result us  7.245
+
+See the boxplot as fig 2 for visual explanation.
+```{r}
 fit1 <- lm(mpg~am, data=mtcars)
 summary(fit1)
-
-#AIC for the best model
+coef(fit1)
+```
+### AIC for the best model
+```{r}
 fit2 <- step(lm(mpg ~ ., data=cars), direction="both", k=3, trace=0)
 summary(fit2)
-
-#Comparing models
+coef(fit2)
+```
+### Comparing models
+```{r}
 anova(fit1,fit2)
-
 
 ```
 
-Appendix
+## Appendix
 
-Figure 1
+### Figure 1
 ```{r}
 pairs(mtcars, panel=panel.smooth, main="Cars summary",col=mtcars$am)
 
 ```
 
-Figure 2
+### Figure 2
 ```{r}
 plot(cars$am , cars$mpg, main="MPG vs Transmission", xlab="Transmission", ylab="MPG", )
 abline(lm(mpg ~ am, cars), col="red")
 ```
 
-Figure 3
+### Figure 3
 ```{r}
 layout(matrix(c(1,2,3,4),2,2))
 plot(fit2)
