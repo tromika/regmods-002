@@ -7,10 +7,12 @@
 We are interested in two question: "Is an automatic or manual transmission better for MPG?" and "Quantifying how different is the MPG between automatic and manual transmissions?" 
 The answers based on the mtcars dataset what is from 1974 Motor Trend US magazine. 
 I used some basic data wrangling and regression models to answer the questions. 
-
+After the data analysis I can say there is a significant relationship between the fuel consumption and the transmission type so the manual transmission is better for MPG. 
+After inspect other variables I found two cofounding variables 'weight' and 'quarter-mile time'. With these variables we can model what varable values can produce the best Mpg.
 
 
 ### Loading the dataset
+See fig 1 for details of the dataset
 
 ```r
 data(mtcars)
@@ -34,21 +36,17 @@ levels(cars$am)[2] <- "Manual"
 ### Calculating the mean of each transmission types
 
 ```r
-mean(cars$mpg[cars$am=="Automatic"])
+automean<-mean(cars$mpg[cars$am=="Automatic"])
+manualmean<-mean(cars$mpg[cars$am=="Manual"])
 ```
+So the mean for manual transmission is 24.3923mpg and 17.1474mpg for automatic transmission. The is a significant diff in the means. Manual transmission have a higher value so based on mean of mpg it's better.
 
-```
-## [1] 17.15
-```
 
-```r
-mean(cars$mpg[cars$am=="Manual"])
-```
-
-```
-## [1] 24.39
-```
 ### Regression model for transmission type how affect the car's fuel consumption
+
+With the previous presumption what's based on the mean of the transmission types we can observe mpg is better with manual transmission. We can prove it with regression model too. If we looking at the coefficients It's shows us 7.245 so a manual transmission will achieve an additional avarage 7.245 mpg.
+
+See the boxplot as fig 2 for visual explanation.
 
 ```r
 fit1 <- lm(mpg~am, data=mtcars)
@@ -85,6 +83,8 @@ coef(fit1)
 ##      17.147       7.245
 ```
 ### AIC for the best model
+
+I got the best model with backward and forward step regression using AIC. I want to keep the transmission variable so I used it with 3 step only. With this AIC criteria I got 2 other cofounding variable 1/4 mile time and weight. So with 0.84 R-squared this model is the best what can best explain the mpg varaible and best improve our model.
 
 ```r
 fit2 <- step(lm(mpg ~ ., data=cars), direction="both", k=3, trace=0)
@@ -123,6 +123,9 @@ coef(fit2)
 ##       9.618      -3.917       1.226       2.936
 ```
 ### Comparing models
+We got 2 models the second one with 2 other cofounding variable fits or describe the mpg variable best.
+
+See fig 3 and 4 for visual explanation.
 
 ```r
 anova(fit1,fit2)
@@ -163,10 +166,19 @@ abline(lm(mpg ~ am, cars), col="red")
 
 ```r
 layout(matrix(c(1,2,3,4),2,2))
-plot(fit2)
+plot(fit1)
 ```
 
 ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+
+### Figure 4
+
+```r
+layout(matrix(c(1,2,3,4),2,2))
+plot(fit2)
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
 

@@ -17,7 +17,7 @@ See fig 1 for details of the dataset
 data(mtcars)
 ```
 ### Description for the mtcars dataset
-```{r echo=FALSE}
+```{r results='hide'}
 ?mtcars
 ```
 ### Converting transmission values to factors
@@ -31,11 +31,12 @@ levels(cars$am)[2] <- "Manual"
 automean<-mean(cars$mpg[cars$am=="Automatic"])
 manualmean<-mean(cars$mpg[cars$am=="Manual"])
 ```
-So the mean for manual transmission is `r manualmean`mpg and `r autolmean`mpg for automatic transmission. The is a significant diff in the means. Manual transmission have a higher value so based on mean of mpg it's better.
+So the mean for manual transmission is `r manualmean`mpg and `r automean`mpg for automatic transmission. The is a significant diff in the means. Manual transmission have a higher value so based on mean of mpg it's better.
 
 
 ### Regression model for transmission type how affect the car's fuel consumption
-With the previous presumption what's based on the mean of the transmission types we can observe mpg is better with manual transmission. We can prove it with regression model too. If we looking at the coefficients It's shows us the result us  7.245
+
+With the previous presumption what's based on the mean of the transmission types we can observe mpg is better with manual transmission. We can prove it with regression model too. If we looking at the coefficients It's shows us 7.245 so a manual transmission will achieve an additional avarage 7.245 mpg.
 
 See the boxplot as fig 2 for visual explanation.
 ```{r}
@@ -44,12 +45,17 @@ summary(fit1)
 coef(fit1)
 ```
 ### AIC for the best model
+
+I got the best model with backward and forward step regression using AIC. I want to keep the transmission variable so I used it with 3 step only. With this AIC criteria I got 2 other cofounding variable 1/4 mile time and weight. So with 0.84 R-squared this model is the best what can best explain the mpg varaible and best improve our model.
 ```{r}
 fit2 <- step(lm(mpg ~ ., data=cars), direction="both", k=3, trace=0)
 summary(fit2)
 coef(fit2)
 ```
 ### Comparing models
+We got 2 models the second one with 2 other cofounding variable fits or describe the mpg variable best.
+
+See fig 3 and 4 for visual explanation.
 ```{r}
 anova(fit1,fit2)
 
@@ -72,10 +78,14 @@ abline(lm(mpg ~ am, cars), col="red")
 ### Figure 3
 ```{r}
 layout(matrix(c(1,2,3,4),2,2))
-plot(fit2)
+plot(fit1)
 ```
 
-
+### Figure 4
+```{r}
+layout(matrix(c(1,2,3,4),2,2))
+plot(fit2)
+```
 
 
 
